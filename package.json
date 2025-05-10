@@ -1,0 +1,12 @@
+{
+  "name": "alta",
+  "version": "1.0.0",
+  "description": "invoice manager",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  }
+}
