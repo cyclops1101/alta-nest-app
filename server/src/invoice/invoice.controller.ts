@@ -1,34 +1,57 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
-import { CreateInvoiceDto } from './dto/create-invoice.dto';
-import { UpdateInvoiceDto } from './dto/update-invoice.dto';
+import { Invoice, Prisma } from '@prisma/client';
 
-@Controller('invoice')
+@Controller('invoices')
 export class InvoiceController {
   constructor(private readonly invoiceService: InvoiceService) {}
 
   @Post()
-  create(@Body() createInvoiceDto: CreateInvoiceDto) {
+  create(@Body() createInvoiceDto: Prisma.InvoiceCreateInput) {
     return this.invoiceService.create(createInvoiceDto);
   }
 
   @Get()
-  findAll() {
-    return this.invoiceService.findAll();
+  findAll(
+    @Query('skip') skip: number,
+    @Query('take') take: number,
+    @Query('cursor') cursor: Prisma.InvoiceWhereUniqueInput,
+    @Query('where') where: Prisma.InvoiceWhereInput,
+    @Query('orderBy') orderBy: Prisma.InvoiceOrderByWithRelationInput,
+  ): Promise<Invoice[]> {
+    return this.invoiceService.find({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+    });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.invoiceService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    const pid: Prisma.InvoiceWhereUniqueInput = { id };
+    return this.invoiceService.findOne(pid);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateInvoiceDto: UpdateInvoiceDto) {
-    return this.invoiceService.update(+id, updateInvoiceDto);
+  update(@Param('id') id: number, @Body() data: Prisma.InvoiceUpdateInput) {
+    const pid: Prisma.InvoiceWhereUniqueInput = { id };
+    return this.invoiceService.update({ where: pid, data });
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.invoiceService.remove(+id);
+  remove(@Param('id') id: number) {
+    const pid: Prisma.InvoiceWhereUniqueInput = { id };
+    return this.invoiceService.remove(pid);
   }
 }

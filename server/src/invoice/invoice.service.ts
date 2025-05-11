@@ -1,26 +1,39 @@
 import { Injectable } from '@nestjs/common';
-import { CreateInvoiceDto } from './dto/create-invoice.dto';
-import { UpdateInvoiceDto } from './dto/update-invoice.dto';
+import { PrismaService } from '@/prisma.service';
+import { Invoice, Prisma } from '@prisma/client';
 
 @Injectable()
 export class InvoiceService {
-  create(createInvoiceDto: CreateInvoiceDto) {
-    return 'This action adds a new invoice';
+  constructor(private readonly prisma: PrismaService) {}
+
+  async find(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.InvoiceWhereUniqueInput;
+    where?: Prisma.InvoiceWhereInput;
+    orderBy?: Prisma.InvoiceOrderByWithRelationInput;
+  }): Promise<Invoice[]> {
+    return this.prisma.invoice.findMany(params);
   }
 
-  findAll() {
-    return `This action returns all invoice`;
+  async findOne(
+    where: Prisma.InvoiceWhereUniqueInput,
+  ): Promise<Invoice | null> {
+    return this.prisma.invoice.findUnique({ where });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} invoice`;
+  async create(data: Prisma.InvoiceCreateInput): Promise<Invoice> {
+    return this.prisma.invoice.create({ data });
   }
 
-  update(id: number, updateInvoiceDto: UpdateInvoiceDto) {
-    return `This action updates a #${id} invoice`;
+  async update(params: {
+    where: Prisma.InvoiceWhereUniqueInput;
+    data: Prisma.InvoiceUpdateInput;
+  }): Promise<Invoice | null> {
+    return this.prisma.invoice.update(params);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} invoice`;
+  async remove(where: Prisma.InvoiceWhereUniqueInput): Promise<Invoice | null> {
+    return this.prisma.invoice.delete({ where });
   }
 }

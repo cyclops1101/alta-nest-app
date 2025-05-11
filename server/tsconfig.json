@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "paths": {
+      "@/generated-client": ["./src/generated-client"],
+      "@/*": ["./src/*"]
+    },
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
@@ -16,6 +20,9 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "moduleResolution": "Node",
+    "strict": true,
+    "esModuleInterop": true
   }
 }

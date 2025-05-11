@@ -1,34 +1,57 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Prisma, User } from '@prisma/client';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  create(@Body() data: Prisma.UserCreateInput) {
+    return this.userService.create(data);
   }
 
   @Get()
-  findAll() {
-    return this.userService.findAll();
+  findAll(
+    @Query('skip') skip: number,
+    @Query('take') take: number,
+    @Query('cursor') cursor: Prisma.UserWhereUniqueInput,
+    @Query('where') where: Prisma.UserWhereInput,
+    @Query('orderBy') orderBy: Prisma.UserOrderByWithRelationInput,
+  ): Promise<User[]> {
+    return this.userService.find({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+    });
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    const pid: Prisma.UserWhereUniqueInput = { id };
+    return this.userService.findOne(pid);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  update(@Param('id') id: number, @Body() data: Prisma.UserUpdateInput) {
+    const pid: Prisma.UserWhereUniqueInput = { id };
+    return this.userService.update({ where: pid, data });
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  remove(@Param('id') id: number) {
+    const pid: Prisma.UserWhereUniqueInput = { id };
+    return this.userService.remove(pid);
   }
 }
