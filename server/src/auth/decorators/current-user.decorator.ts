@@ -1,8 +1,14 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { Request } from 'express';
 
 export const CurrentUser = createParamDecorator(
-  (data: unknown, context: ExecutionContext) => {
-    const request = context.switchToHttp().getRequest();
-    return request.user;
+  (_data, ctx: ExecutionContext): number => {
+    const request = ctx
+      .switchToHttp()
+      .getRequest<Request & { user?: { id: number } }>();
+    if (!request.user) {
+      throw new Error('User not found');
+    }
+    return request.user?.id;
   },
 );

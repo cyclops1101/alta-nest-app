@@ -7,10 +7,15 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
 import { Invoice, Prisma } from '@prisma/client';
+import { CurrentUser } from '@/auth/decorators/current-user.decorator';
+import { JwtAuthGuard } from '@/auth/auth.guard';
+import { JwtUser } from '@/auth/types/jwt-user.type';
 
+@UseGuards(JwtAuthGuard)
 @Controller('invoices')
 export class InvoiceController {
   constructor(private readonly invoiceService: InvoiceService) {}
@@ -22,6 +27,7 @@ export class InvoiceController {
 
   @Get()
   findAll(
+    @CurrentUser() user: JwtUser,
     @Query('skip') skip: number,
     @Query('take') take: number,
     @Query('cursor') cursor: Prisma.InvoiceWhereUniqueInput,
@@ -29,10 +35,13 @@ export class InvoiceController {
     @Query('orderBy') orderBy: Prisma.InvoiceOrderByWithRelationInput,
   ): Promise<Invoice[]> {
     return this.invoiceService.find({
+      where: {
+        ...where,
+        user_id: user.id,
+      },
       skip,
       take,
       cursor,
-      where,
       orderBy,
     });
   }
