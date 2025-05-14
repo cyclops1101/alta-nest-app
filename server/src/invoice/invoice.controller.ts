@@ -8,12 +8,15 @@ import {
   Post,
   Query,
   UseGuards,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
-import { Invoice, Prisma } from '@prisma/client';
+import { Invoice, Prisma } from '@/generated-client';
 import { CurrentUser } from '@/auth/decorators/current-user.decorator';
 import { JwtAuthGuard } from '@/auth/auth.guard';
 import { JwtUser } from '@/auth/types/jwt-user.type';
+import { InvoiceQueryDto } from '@/invoice/dto/invoice-query.dto';
 
 @UseGuards(JwtAuthGuard)
 @Controller('invoices')
@@ -26,15 +29,13 @@ export class InvoiceController {
   }
 
   @Get()
+  @UsePipes(new ValidationPipe({ transform: true }))
   findAll(
     @CurrentUser() user: JwtUser,
-    @Query('skip') skip: number,
-    @Query('take') take: number,
-    @Query('cursor') cursor: Prisma.InvoiceWhereUniqueInput,
-    @Query('where') where: Prisma.InvoiceWhereInput,
-    @Query('orderBy') orderBy: Prisma.InvoiceOrderByWithRelationInput,
+    @Query() query: InvoiceQueryDto,
   ): Promise<Invoice[]> {
-    return this.invoiceService.find({
+    const { skip, take, cursor, where, orderBy } = query;
+    return this.invoiceService.findMany({
       where: {
         ...where,
         user_id: user.id,
@@ -49,7 +50,7 @@ export class InvoiceController {
   @Get(':id')
   findOne(@Param('id') id: number) {
     const pid: Prisma.InvoiceWhereUniqueInput = { id };
-    return this.invoiceService.findOne(pid);
+    return this.invoiceService.findUnique(pid);
   }
 
   @Patch(':id')
@@ -61,6 +62,6 @@ export class InvoiceController {
   @Delete(':id')
   remove(@Param('id') id: number) {
     const pid: Prisma.InvoiceWhereUniqueInput = { id };
-    return this.invoiceService.remove(pid);
+    return this.invoiceService.delete(pid);
   }
 }

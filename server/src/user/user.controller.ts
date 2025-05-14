@@ -9,7 +9,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { Prisma, User } from '@prisma/client';
+import { Prisma, User } from '@/generated-client';
 
 @Controller('users')
 export class UserController {
@@ -21,14 +21,14 @@ export class UserController {
   }
 
   @Get()
-  findAll(
+  findMany(
     @Query('skip') skip: number,
     @Query('take') take: number,
     @Query('cursor') cursor: Prisma.UserWhereUniqueInput,
     @Query('where') where: Prisma.UserWhereInput,
     @Query('orderBy') orderBy: Prisma.UserOrderByWithRelationInput,
   ): Promise<User[]> {
-    return this.userService.find({
+    return this.userService.findMany({
       skip,
       take,
       cursor,
@@ -40,7 +40,7 @@ export class UserController {
   @Get(':id')
   findOne(@Param('id') id: number) {
     const pid: Prisma.UserWhereUniqueInput = { id };
-    return this.userService.findOne(pid);
+    return this.userService.findUnique(pid);
   }
 
   @Patch(':id')
@@ -52,6 +52,6 @@ export class UserController {
   @Delete(':id')
   remove(@Param('id') id: number) {
     const pid: Prisma.UserWhereUniqueInput = { id };
-    return this.userService.remove(pid);
+    return this.userService.delete(pid);
   }
 }

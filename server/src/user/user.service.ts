@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma.service';
-import { User, Prisma } from '@prisma/client';
+import { User, Prisma } from '@/generated-client';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async find(params: {
+  async findMany(params: {
     skip?: number;
     take?: number;
     cursor?: Prisma.UserWhereUniqueInput;
@@ -20,7 +20,7 @@ export class UserService {
     return this.prisma.user.findUnique({ where: { email } });
   }
 
-  async findOne(where: Prisma.UserWhereUniqueInput): Promise<User | null> {
+  async findUnique(where: Prisma.UserWhereUniqueInput): Promise<User | null> {
     return this.prisma.user.findUnique({ where });
   }
 
@@ -35,7 +35,7 @@ export class UserService {
     return this.prisma.user.update(params);
   }
 
-  async remove(where: Prisma.UserWhereUniqueInput): Promise<User | null> {
+  async delete(where: Prisma.UserWhereUniqueInput): Promise<User | null> {
     return this.prisma.user.delete({ where });
   }
 }

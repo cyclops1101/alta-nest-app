@@ -7,11 +7,12 @@
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "start:db": "docker compose up -d",
-    "start:app": "concurrently -k -n \"backend,frontend\" -c \"cyan,green\" \"npm run start --prefix server\" \"npm run dev --prefix client\"",
+    "start": "concurrently -k -n \"backend,frontend\" -c \"cyan,green\" \"npm run start:prod --prefix server\" \"npm run preview --prefix client\"",
     "prisma:deploy": "cd server && npx prisma migrate dev --name init && cd ..",
     "prisma:seed": "cd server && npx prisma db seed & cd ..",
-    "dev": "npm run start:db && sleep 5 && npm run prisma:deploy && npm run prisma:seed && npm run start:app"
+    "update": "cd client && npm install && npm run build && cd ../server && npm install && npx prisma generate && npm run build && cd ..",
+    "dev": "npm run start:db && sleep 5 && npm run prisma:deploy && npm run prisma:seed && npm run start:app",
+    "test": "cd server && npm test && cd .. && cd client && npm test && cd .."
   },
 
   "devDependencies": {

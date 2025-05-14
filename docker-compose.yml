@@ -1,7 +1,6 @@
 services:
   db:
-    image: postgres:17.5-alpine3.21
-    container_name: alta-db
+    image: postgres:17
     environment:
       POSTGRES_USER: nestuser
       POSTGRES_PASSWORD: nestpass
@@ -10,11 +9,30 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-    networks:
-      - altametrics
+
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    command: npm run preview -- --port 80 --host
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql://nestuser:nestpass@db:5432/nestdb
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    command: npm run start:prod
+
+
 
 volumes:
   pgdata:
-
-networks:
-  altametrics:

@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '@/prisma.service';
-import { Invoice, Prisma } from '@prisma/client';
+import { Invoice, Prisma } from '@/generated-client';
 
 @Injectable()
 export class InvoiceService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async find(params: {
+  async findMany(params: {
     skip?: number;
     take?: number;
     cursor?: Prisma.InvoiceWhereUniqueInput;
@@ -16,7 +16,7 @@ export class InvoiceService {
     return this.prisma.invoice.findMany(params);
   }
 
-  async findOne(
+  async findUnique(
     where: Prisma.InvoiceWhereUniqueInput,
   ): Promise<Invoice | null> {
     return this.prisma.invoice.findUnique({ where });
@@ -33,7 +33,7 @@ export class InvoiceService {
     return this.prisma.invoice.update(params);
   }
 
-  async remove(where: Prisma.InvoiceWhereUniqueInput): Promise<Invoice | null> {
+  async delete(where: Prisma.InvoiceWhereUniqueInput): Promise<Invoice | null> {
     return this.prisma.invoice.delete({ where });
   }
 }

@@ -27,42 +27,34 @@ This is a full-stack web application built with:
 client/         # React + Vite frontend
 server/         # NestJS + Prisma backend(inside server/)
 docker-compose.yml
-Dockerfile
+
 ```
 
 ---
 
 ## 🛠 Setup Instructions
 
-### 1. Install dependencies
+### 1. Start the Docker Container
 
 ```bash
-pnpm install
-# or
-npm install
+docker compose up -d --build
 ```
 
-This will install root + client + server dependencies.
+This will start the PostgreSQL database, Vite+React app, and the Nestjs+Prisma app  in a Docker container.
 
 ---
-### 2. Configure environment variables
-- Create a `.env` file in the `server/` directory.
-- Copy the contents of `.env.example` to `.env` and update the values as needed.
-- Make sure to set the `DATABASE_URL` to match your the docker PostgreSQL setup.
-- Add your JWT secret key to the `.env` file.
-
----
-
-### 3. Start the app with Dockerized DB + local frontend/backend
+### 2. Run the Prisma Migrations and Seed the Database
 
 ```bash
-npm run dev
+docker compose exec backend npx prisma migrate deploy
+docker compose exec backend npx prisma db seed
 ```
 
-This will:
-- Start the Postgres DB in Docker
-- Run `prisma migrate dev` and `prisma db seed` inside `server/`
-- Launch React frontend on http://localhost:5173
+---
+
+### 3. Visit the Application in your browser
+
+- Launch React frontend on http://localhost
 - Launch NestJS backend on http://localhost:3000
 
 ---
@@ -74,22 +66,12 @@ You can log in using the seeded user:
 
 ```
 Email:    alice@example.com
-Password: password123
+Password: 1234
 ```
 
 ---
 
 ## 📦 Useful Scripts
-
-```json
-"scripts": {
-  "start:db": "docker compose up -d",
-  "start:app": "concurrently -k -n \"backend,frontend\" -c \"cyan,green\" \"npm run dev --prefix server\" \"npm run dev --prefix client\"",
-  "prisma:deploy": "cd server && npx prisma migrate dev --name init && cd ..",
-  "prisma:seed": "cd server && npx prisma db seed && cd ..",
-  "dev": "npm run start:db && sleep 5 && npm run prisma:deploy && npm run prisma:seed && npm run start:app"
-}
-```
 
 ---
 
